@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.dependencies import get_current_user, get_db, require_roles
 from app.models.user import User, UserRole
@@ -32,6 +33,16 @@ async def login_user(
     """Authenticate a user and return a JWT access token."""
     return await auth_service.login(payload)
 
+@router.post("/token", response_model=Token)
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    auth_service: AuthService = Depends(get_auth_service),
+) -> Token:
+    payload = UserLogin(
+        email=form_data.username,
+        password=form_data.password,
+    )
+    return await auth_service.login(payload)
 
 @router.get("/me", response_model=UserRead, status_code=status.HTTP_200_OK)
 async def read_current_user(current_user: User = Depends(get_current_user)) -> User:
@@ -51,3 +62,14 @@ async def read_admin_user(
 async def auth_status() -> dict[str, str]:
     """Return auth module implementation status."""
     return {"module": "auth", "status": "implemented"}
+
+@router.post("/token", response_model=Token)
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    auth_service: AuthService = Depends(get_auth_service),
+) -> Token:
+    payload = UserLogin(
+        email=form_data.username,
+        password=form_data.password,
+    )
+    return await auth_service.login(payload)

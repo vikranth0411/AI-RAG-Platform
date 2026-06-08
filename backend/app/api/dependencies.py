@@ -13,7 +13,9 @@ from app.models.user import User, UserRole
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import TokenPayload
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_PREFIX}/auth/token"
+)
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
