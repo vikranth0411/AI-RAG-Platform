@@ -8,9 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies import get_current_user, get_db
 from app.core.exceptions import AppError
 from app.models.user import User
+from app.repositories.conversation_repository import ConversationRepository
 from app.repositories.file_repository import FileRepository
+from app.repositories.message_repository import MessageRepository
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.services.chat_service import ChatService, PreparedChat
+from app.services.conversation_service import ConversationService
 from app.services.llm_service import LLMService
 
 router = APIRouter()
@@ -21,6 +24,10 @@ def get_chat_service(db: AsyncSession = Depends(get_db)) -> ChatService:
     return ChatService(
         llm_service=LLMService(),
         file_repository=FileRepository(db),
+        conversation_service=ConversationService(
+            conversation_repository=ConversationRepository(db),
+            message_repository=MessageRepository(db),
+        ),
     )
 
 
@@ -45,7 +52,11 @@ async def stream_chat_completion(
 
     async def event_stream() -> AsyncIterator[str]:
         try:
-            async for token in chat_service.stream_chat(payload=payload, prepared=prepared):
+            async for token in chat_service.stream_chat(
+                payload=payload,
+                prepared=prepared,
+                current_user=current_user,
+            ):
                 yield f"data: {json.dumps({'token': token})}\n\n"
             yield f"data: {json.dumps({'done': True, 'sources': _serialize_sources(prepared)})}\n\n"
         except AppError as exc:

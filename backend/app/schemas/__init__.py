@@ -9,6 +9,12 @@ from app.schemas.code_understanding import (
     CodeOptimizationResponse,
     ComplexityMetrics,
 )
+from app.schemas.conversation import (
+    ConversationCreateRequest,
+    ConversationListResponse,
+    ConversationMessagesResponse,
+    ConversationResponse,
+)
 from app.schemas.file import UploadPolicy, UploadedFileRead
 from app.schemas.nl_sql import (
     ColumnInfo,
@@ -52,6 +58,10 @@ __all__ = [
     "CodeExplainResponse",
     "CodeOptimizationResponse",
     "ComplexityMetrics",
+    "ConversationCreateRequest",
+    "ConversationListResponse",
+    "ConversationMessagesResponse",
+    "ConversationResponse",
     "ColumnInfo",
     "DatabaseSchema",
     "ForeignKeyInfo",

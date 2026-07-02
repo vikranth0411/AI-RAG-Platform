@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
@@ -15,6 +17,7 @@ class ChatRequest(BaseModel):
     """Chat completion request with optional RAG context injection."""
 
     message: str = Field(..., min_length=1)
+    conversation_id: UUID | None = None
     history: list[ChatMessage] = Field(default_factory=list)
     context: str | None = None
     use_rag: bool = True
