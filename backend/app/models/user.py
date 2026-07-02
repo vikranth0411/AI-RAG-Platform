@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
 
@@ -37,4 +37,9 @@ class User(Base):
         nullable=False,
         default=lambda: datetime.now(UTC),
         onupdate=lambda: datetime.now(UTC),
+    )
+
+    conversations: Mapped[list["Conversation"]] = relationship(
+        back_populates="owner",
+        cascade="all, delete-orphan",
     )
